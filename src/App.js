@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import logo from "./images/Logo.png";
+import secondaryLogo from "./images/secondary.png";
 
 const SHEET_ID = "1e0GPp6YR-YzydI1Loqz3RJJY3k66PdSl4gJikPc7d28";
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -50,8 +51,8 @@ const App = () => {
   const matchesFilters = chef => {
     const genderMatch = selectedGenders.length === 0 || selectedGenders.includes(chef.Gender);
     const cityMatch = selectedCities.length === 0 || selectedCities.includes(chef.Location);
-    const partyMatch = selectedPartySize === "" || chef["Party Size"] === selectedPartySize;
-    const priceMatch = selectedPriceRange === "" || chef["Price Range"] === selectedPriceRange;
+    const partyMatch = selectedPartySize === "" || chef["Capacity"] === selectedPartySize;
+    const priceMatch = selectedPriceRange === "" || chef["Selling Range"] === selectedPriceRange;
     return genderMatch && cityMatch && partyMatch && priceMatch;
   };
 
@@ -91,10 +92,15 @@ const App = () => {
         font-family: 'Archivo Black', sans-serif;
         text-transform: uppercase;
         font-size: 2rem;
-        margin-bottom: 4rem;
+        margin-bottom: 3rem;
       }
       .logo {
-        width: 180px;
+        width: 200px;
+        margin: 60px auto;
+        display: block;
+      }
+      .secondary-logo {
+        width: 75px;
         margin: 40px auto 0;
         display: block;
       }
@@ -127,11 +133,43 @@ const App = () => {
       .chef-info p {
         margin: 4px 0;
       }
+      .bullet-section {
+        display: block;
+        max-width: 600px;
+        margin: 0 auto 40px;
+        font-size: 1.1rem;
+        line-height: 1.4;
+        font-weight: 500;
+        text-align: left;
+      }
+      .bullet-section p {
+        margin: 6px 0;
+        padding-left: 1.5em;
+        text-indent: -1em;
+      }
+      .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 40px;
+      }
+      .logo-top-left {
+        width: 180px;
+        display: block;
+      }
+      .legal-top-right {
+        font-size: 0.75rem;
+        color: #555;
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
-    <h1>Celebrity Chef Dinner</h1>
-
+    <div class="header-row">
+    <img src="${logo}" alt="Elevate Logo" class="logo-top-left" />
+    <div class="legal-top-right">© 2025 ELEVATE PROPRIETARY & CONFIDENTIAL.</div>
+  </div>
+  <h1>Celebrity Chef Dinner</h1>
     ${quoteList.map(chef => `
       <div class="chef-card">
         <img src="${chef.Headshot}" alt="${chef["Chef Name"]}" class="headshot" />
@@ -141,15 +179,11 @@ const App = () => {
           <p><strong>Location:</strong> ${chef.Location}</p>
           <p>${chef.Bio}</p>
           <p><strong>Restaurants:</strong> ${chef["Restaurant/Venue"] || "N/A"}</p>
-          <p><strong>Private Home:</strong> ${chef["Private Home"]}</p>
-          <p><strong>Private Dining Room:</strong> ${chef["Private Dining Room (Y/N)"]}</p>
-          <p><strong>Capacity:</strong> __________</p>
-          <p><strong>Price:</strong> __________</p>
+          <p><strong>Total Investment:</strong> ${chef["Selling Range"] || "N/A"}</p>
         </div>
       </div>
     `).join('')}
-
-    <img src="${logo}" alt="Elevate Logo" class="logo" />
+    <img src="${secondaryLogo}" alt="Secondary Logo" class="secondary-logo" />
   </body>
 </html>
       `);
@@ -159,13 +193,33 @@ const App = () => {
 
   return (
     <div className="container">
-      {quoteList.length > 0 && (
-        <div className="quote-top-right">
-          <button className="quote-button" onClick={() => setShowQuoteModal(true)}>
-            View Quote ({quoteList.length})
-          </button>
-        </div>
-      )}
+      <div className="header-bar">
+        <img
+          src={secondaryLogo}
+          alt="Secondary Logo"
+          className="secondary-logo"
+          onClick={() => {
+            setSearch("");
+            setViewAll(false);
+            setSelectedGenders([]);
+            setSelectedCities([]);
+            setSelectedPartySize("");
+            setSelectedPriceRange("");
+          }}
+        />
+  
+        {quoteList.length > 0 && (
+          <div className="sticky-quote-button">
+            <button
+              className="quote-button"
+              onClick={() => setShowQuoteModal(true)}
+            >
+              View Quote ({quoteList.length})
+            </button>
+          </div>
+        )}
+      </div>
+
 
       <h1 className="title">Elevate Experiences<br />Chef Dashboard</h1>
 
@@ -189,80 +243,129 @@ const App = () => {
       </div>
 
       {viewAll && (
-        <>
-          <div className="filters">
-            <div className="dropdown-group">
-              <button onClick={() => setShowGenderDropdown(!showGenderDropdown)}>Gender ▾</button>
-              {showGenderDropdown && (
-                <div className="dropdown-panel">
-                  {uniqueValues("Gender").map((gender, i) => (
-                    <label key={i} className="dropdown-option">
-                      <input
-                        type="checkbox"
-                        checked={selectedGenders.includes(gender)}
-                        onChange={() => toggleSelection(gender, selectedGenders, setSelectedGenders)}
-                      /> {gender}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="dropdown-group">
-              <button onClick={() => setShowCityDropdown(!showCityDropdown)}>City ▾</button>
-              {showCityDropdown && (
-                <div className="dropdown-panel">
-                  {uniqueValues("Location").map((city, i) => (
-                    <label key={i} className="dropdown-option">
-                      <input
-                        type="checkbox"
-                        checked={selectedCities.includes(city)}
-                        onChange={() => toggleSelection(city, selectedCities, setSelectedCities)}
-                      /> {city}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="dropdown-group">
-              <button onClick={() => setShowPartyDropdown(!showPartyDropdown)}>Party Size ▾</button>
-              {showPartyDropdown && (
-                <div className="dropdown-panel">
-                  {["15-25", "25-50", "50+"].map((size, i) => (
-                    <label key={i} className="dropdown-option">
-                      <input
-                        type="radio"
-                        name="partySize"
-                        value={size}
-                        checked={selectedPartySize === size}
-                        onChange={() => setSelectedPartySize(size)}
-                      /> {size}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="dropdown-group">
-              <button onClick={() => setShowPriceDropdown(!showPriceDropdown)}>Price Range ▾</button>
-              {showPriceDropdown && (
-                <div className="dropdown-panel">
-                  {["$20,000 - $30,000", "$30,000 - $50,000", "$50,000 - $75,000", "$75,000+"].map((price, i) => (
-                    <label key={i} className="dropdown-option">
-                      <input
-                        type="radio"
-                        name="priceRange"
-                        value={price}
-                        checked={selectedPriceRange === price}
-                        onChange={() => setSelectedPriceRange(price)}
-                      /> {price}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
+  <>
+    <div className="filters">
+      {/* Gender Filter */}
+      <div className="dropdown-group">
+        <button
+          onClick={() => setShowGenderDropdown(!showGenderDropdown)}
+          onMouseEnter={() => setShowGenderDropdown(true)}
+        >
+          Gender ▾
+        </button>
+        {showGenderDropdown && (
+          <div
+            className="dropdown-panel"
+            onMouseLeave={() => setShowGenderDropdown(false)}
+          >
+            {uniqueValues("Gender").map((gender, i) => (
+              <label key={i} className="dropdown-option">
+                <input
+                  type="checkbox"
+                  checked={selectedGenders.includes(gender)}
+                  onChange={() => {
+                    toggleSelection(gender, selectedGenders, setSelectedGenders);
+                    setShowGenderDropdown(false); // Close immediately on click
+                  }}
+                />{" "}
+                {gender}
+              </label>
+            ))}
           </div>
+        )}
+      </div>
+
+      {/* City Filter */}
+      <div className="dropdown-group">
+        <button
+          onClick={() => setShowCityDropdown(!showCityDropdown)}
+          onMouseEnter={() => setShowCityDropdown(true)}
+        >
+          City ▾
+        </button>
+        {showCityDropdown && (
+          <div
+            className="dropdown-panel"
+            onMouseLeave={() => setShowCityDropdown(false)}
+          >
+            {uniqueValues("Location").map((city, i) => (
+              <label key={i} className="dropdown-option">
+                <input
+                  type="checkbox"
+                  checked={selectedCities.includes(city)}
+                  onChange={() => toggleSelection(city, selectedCities, setSelectedCities)}
+                />{" "}
+                {city}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Party Size Filter */}
+      <div className="dropdown-group">
+        <button
+          onClick={() => setShowPartyDropdown(!showPartyDropdown)}
+          onMouseEnter={() => setShowPartyDropdown(true)}
+        >
+          Party Size ▾
+        </button>
+        {showPartyDropdown && (
+          <div
+            className="dropdown-panel"
+            onMouseLeave={() => setShowPartyDropdown(false)}
+          >
+            {["15-25", "25-50", "50+"].map((size, i) => (
+              <label key={i} className="dropdown-option">
+                <input
+                  type="radio"
+                  name="partySize"
+                  value={size}
+                  checked={selectedPartySize === size}
+                  onChange={() => {
+                    setSelectedPartySize(size);
+                    setShowPartyDropdown(false); // Close on selection
+                  }}
+                />{" "}
+                {size}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Price Range Filter */}
+      <div className="dropdown-group">
+        <button
+          onClick={() => setShowPriceDropdown(!showPriceDropdown)}
+          onMouseEnter={() => setShowPriceDropdown(true)}
+        >
+          Price Range ▾
+        </button>
+        {showPriceDropdown && (
+          <div
+            className="dropdown-panel"
+            onMouseLeave={() => setShowPriceDropdown(false)}
+          >
+            {["$20,000 - $30,000", "$30,000 - $50,000", "$50,000 - $75,000", "$75,000+"].map((price, i) => (
+              <label key={i} className="dropdown-option">
+                <input
+                  type="radio"
+                  name="priceRange"
+                  value={price}
+                  checked={selectedPriceRange === price}
+                  onChange={() => {
+                    setSelectedPriceRange(price);
+                    setShowPriceDropdown(false); // Close on selection
+                  }}
+                />{" "}
+                {price}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
 
           <div className="filters-bottom">
             <button className="view-all-button" onClick={() => {
@@ -283,42 +386,48 @@ const App = () => {
         </>
       )}
 
-      {showQuoteModal && (
-        <div className="modal">
-          <button className="close-button" onClick={() => setShowQuoteModal(false)}>×</button>
-          <h1 className="modal-title">Chef Options</h1>
-          <div className="modal-buttons">
-            <button className="quote-button" onClick={() => setQuoteList([])}>Clear Quote</button>
-            <button className="quote-button" onClick={handleEmailQuote}>Email Quote</button>
-          </div>
+{showQuoteModal && (
+  <div className="modal">
+    <button className="close-button" onClick={() => setShowQuoteModal(false)}>×</button>
 
-          <div className="modal-logo-container">
-            <img src={logo} alt="Elevate Logo" className="modal-logo" />
-          </div>
+    <div className="modal-logo-container">
+      <img src={logo} alt="Elevate Logo" className="modal-logo" />
+    </div>
 
-          {quoteList.map((chef, i) => (
-            <div key={i} className="chef-card">
-              <img
-                src={chef.Headshot}
-                alt={chef["Chef Name"]}
-                className="headshot"
-              />
-              <div className="chef-info">
-                <h2>{chef["Chef Name"]}</h2>
-                <p><strong>Gender:</strong> {chef.Gender}</p>
-                <p><strong>Location:</strong> {chef.Location}</p>
-                <p>{chef.Bio}</p>
-                <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
-                <p><strong>Private Home:</strong> <input type="checkbox" checked={chef["Private Home"] === "TRUE"} readOnly /> Yes <input type="checkbox" checked={chef["Private Home"] === "FALSE"} readOnly /> No</p>
-                <p><strong>Private Dining Room:</strong> <input type="checkbox" checked={chef["Private Dining Room (Y/N)"] === "Y"} readOnly /> Yes <input type="checkbox" checked={chef["Private Dining Room (Y/N)"] === "N"} readOnly /> No</p>
-                <p><strong>Capacity:</strong> __________</p>
-                <p><strong>Price:</strong> __________</p>
-                <button className="quote-button" onClick={() => handleRemoveFromQuote(chef["Chef Name"])}>Remove</button>
-              </div>
-            </div>
-          ))}
+    {quoteList.map((chef, i) => (
+      <div key={i} className="chef-card">
+        <img
+          src={chef.Headshot}
+          alt={chef["Chef Name"]}
+          className="headshot"
+        />
+        <div className="chef-info">
+          <div className="chef-header">
+            <h2>{chef["Chef Name"]}</h2>
+            <button
+              className="remove-x-button"
+              title="Remove from quote"
+              onClick={() => handleRemoveFromQuote(chef["Chef Name"])}
+            >
+              ×
+            </button>
+          </div>
+          <p><strong>Gender:</strong> {chef.Gender}</p>
+          <p><strong>Location:</strong> {chef.Location}</p>
+          <p>{chef.Bio}</p>
+          <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
+          <p><strong>Price:</strong> {chef["Selling Range"] || "N/A"}</p>
         </div>
-      )}
+      </div>
+    ))}
+
+    {/* Moved to bottom */}
+    <div className="modal-buttons">
+      <button className="quote-button" onClick={() => setQuoteList([])}>Clear Quote</button>
+      <button className="quote-button" onClick={handleEmailQuote}>Email Quote</button>
+    </div>
+  </div>
+)}
 
       <div className="chef-list">
         {(search || viewAll) && displayedChefs.length > 0 ? (
@@ -337,8 +446,8 @@ const App = () => {
                 <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
                 <p><strong>Private Home:</strong> <input type="checkbox" checked={chef["Private Home"] === "TRUE"} readOnly /> Yes <input type="checkbox" checked={chef["Private Home"] === "FALSE"} readOnly /> No</p>
                 <p><strong>Private Dining Room:</strong> <input type="checkbox" checked={chef["Private Dining Room (Y/N)"] === "Y"} readOnly /> Yes <input type="checkbox" checked={chef["Private Dining Room (Y/N)"] === "N"} readOnly /> No</p>
-                <p><strong>Capacity:</strong> __________</p>
-                <p><strong>Price:</strong> __________</p>
+                <p><strong>Capacity:</strong> </p>
+                <p><strong>Price:</strong> {chef["Selling Range"] || "N/A"}</p>
                 <button className="quote-button" onClick={() => handleAddToQuote(chef)}>Add to Quote</button>
               </div>
             </div>
