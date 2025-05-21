@@ -207,7 +207,6 @@ const App = () => {
             setSelectedPriceRange("");
           }}
         />
-  
         {quoteList.length > 0 && (
           <div className="sticky-quote-button">
             <button
