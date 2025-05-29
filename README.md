@@ -27,7 +27,7 @@ A React-based web app for browsing, filtering, and quoting celebrity chefs for p
 - **Google Sheets API** (Data source)
 - **Cloudinary** (Image hosting)
 - **CSS**
-- **GitHub Pages** (Deployment)
+- **Vercel** (Deployment)
 
 ## 📦 Installation
 
