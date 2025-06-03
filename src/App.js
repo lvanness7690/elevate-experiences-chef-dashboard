@@ -444,7 +444,7 @@ const App = () => {
                 <p>{chef.Bio}</p>
                 <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
                 <p><strong>Private Home:</strong> <input type="checkbox" checked={chef["Private Home"] === "TRUE"} readOnly /> Yes <input type="checkbox" checked={chef["Private Home"] === "FALSE"} readOnly /> No</p>
-                <p><strong>Private Dining Room:</strong> <input type="checkbox" checked={chef["Private Dining Room (Y/N)"] === "Y"} readOnly /> Yes <input type="checkbox" checked={chef["Private Dining Room (Y/N)"] === "N"} readOnly /> No</p>
+                <p><strong>Private Dining Room:</strong> <input type="checkbox" checked={chef["Private Dining Room (Y/N)"] === "TRUE"} readOnly /> Yes <input type="checkbox" checked={chef["Private Dining Room (Y/N)"] === "FALSE"} readOnly /> No</p>
                 <p><strong>Capacity:</strong> </p>
                 <p><strong>Price:</strong> {chef["Selling Range"] || "N/A"}</p>
                 <button className="quote-button" onClick={() => handleAddToQuote(chef)}>Add to Quote</button>
