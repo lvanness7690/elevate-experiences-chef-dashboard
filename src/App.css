@@ -404,3 +404,10 @@ body {
   position: relative; /* or absolute if you're positioning it */
   z-index: 1000; /* way higher than the sticky header */
 }
+
+.sticky-container {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #D8D8D8;
+}
