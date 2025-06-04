@@ -7,6 +7,20 @@ const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const RANGE = "Data";
 const URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
 
+// Utility to generate a random ID for quote sharing
+function generateQuoteId() {
+  return (
+    Math.random().toString(36).substring(2, 10) +
+    Date.now().toString(36)
+  );
+}
+
+// Try to detect if the URL is /quote/:id
+function getQuoteIdFromPath() {
+  const match = window.location.pathname.match(/^\/quote\/([a-zA-Z0-9]+)/);
+  return match ? match[1] : null;
+}
+
 const App = () => {
   const [chefs, setChefs] = useState([]);
   const [search, setSearch] = useState("");
@@ -24,19 +38,38 @@ const App = () => {
   const [showPrice, setShowPrice] = useState(true);
   const [showPrivateDiningRoomCapacity, setShowPrivateDiningRoomCapacity] = useState(true);
 
+  // If on /quote/:id, load quote data from localStorage and render quote page
+  const quoteIdFromUrl = getQuoteIdFromPath();
   useEffect(() => {
-    fetch(URL)
-      .then(res => res.json())
-      .then(data => {
-        const rows = data.values;
-        const headers = rows[0];
-        const chefsData = rows.slice(1).map(row => {
-          const obj = {};
-          headers.forEach((key, i) => (obj[key] = row[i] || ""));
-          return obj;
+    if (quoteIdFromUrl) {
+      // Only fetch chef data if not already loaded (for logo, names, etc.)
+      fetch(URL)
+        .then(res => res.json())
+        .then(data => {
+          const rows = data.values;
+          const headers = rows[0];
+          const chefsData = rows.slice(1).map(row => {
+            const obj = {};
+            headers.forEach((key, i) => (obj[key] = row[i] || ""));
+            return obj;
+          });
+          setChefs(chefsData);
         });
-        setChefs(chefsData);
-      });
+    } else {
+      fetch(URL)
+        .then(res => res.json())
+        .then(data => {
+          const rows = data.values;
+          const headers = rows[0];
+          const chefsData = rows.slice(1).map(row => {
+            const obj = {};
+            headers.forEach((key, i) => (obj[key] = row[i] || ""));
+            return obj;
+          });
+          setChefs(chefsData);
+        });
+    }
+    // eslint-disable-next-line
   }, []);
 
   const uniqueValues = key => [...new Set(chefs.map(c => c[key]).filter(Boolean))];
@@ -74,122 +107,25 @@ const App = () => {
   };
 
   const handleEmailQuote = () => {
-    const newWindow = window.open("", "_blank");
-    if (newWindow) {
-      const content = document.getElementById("pdf-content").innerHTML;
-      newWindow.document.write(`
-     <html>
-          <head>
-            <title>Elevate Experiences - Chef Quote</title>
-            <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet">
-            <style>
-              body {
-                font-family: 'Inter Tight', sans-serif;
-                padding: 40px;
-                color: #2D2D2D;
-                background: #f5f5f5;
-                text-align: center;
-              }
-              h1 {
-                font-family: 'Archivo Black', sans-serif;
-                text-transform: uppercase;
-                font-size: 2rem;
-                margin-bottom: 3rem;
-              }
-              .logo {
-                width: 200px;
-                margin: 60px auto;
-                display: block;
-              }
-              .secondary-logo {
-                width: 75px;
-                margin: 40px auto 0;
-                display: block;
-              }
-              .chef-card {
-                display: flex;
-                gap: 20px;
-                margin-bottom: 30px;
-                border-bottom: 2px solid #F26622;
-                padding-bottom: 30px;
-                max-width: 800px;
-                margin-left: auto;
-                margin-right: auto;
-                text-align: left;
-              }
-              .headshot {
-                width: 100px;
-                height: 100px;
-                object-fit: cover;
-                border-radius: 50%;
-              }
-              .chef-info {
-                flex-grow: 1;
-              }
-              .chef-info h2 {
-                margin: 0 0 10px;
-                font-family: 'Archivo Black', sans-serif;
-                font-size: 1.2rem;
-                text-transform: uppercase;
-              }
-              .chef-info p {
-                margin: 4px 0;
-              }
-              .bullet-section {
-                display: block;
-                max-width: 600px;
-                margin: 0 auto 40px;
-                font-size: 1.1rem;
-                line-height: 1.4;
-                font-weight: 500;
-                text-align: left;
-              }
-              .bullet-section p {
-                margin: 6px 0;
-                padding-left: 1.5em;
-                text-indent: -1em;
-              }
-              .header-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                margin-bottom: 40px;
-              }
-              .logo-top-left {
-                width: 180px;
-                display: block;
-              }
-              .legal-top-right {
-                font-size: 0.75rem;
-                color: #555;
-                margin-top: 10px;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="header-row">
-              <img src="/logo.png" alt="Elevate Logo" class="logo-top-left" />
-              <div class="legal-top-right">© 2025 ELEVATE PROPRIETARY & CONFIDENTIAL.</div>
-            </div>
-            <h1>Celebrity Chef Dinner</h1>
-            ${quoteList.map(chef => `
-              <div class="chef-card">
-                <img src="${chef.Headshot}" alt="${chef["Chef Name"]}" class="headshot" />
-                <div class="chef-info">
-                  <h2>${chef["Chef Name"]}</h2>
-                  <p><strong>Location:</strong> ${chef.Location}</p>
-                  <p>${chef.Bio}</p>
-                  <p><strong>Restaurants:</strong> ${chef["Restaurant/Venue"] || "N/A"}</p>
-                  ${showPrice ? `<p><strong>Total Investment:</strong> ${chef["Selling Range"] || "N/A"}</p>` : ""}
-                </div>
-              </div>
-            `).join('')}
-            <img src="/secondary.png" alt="Secondary Logo" class="secondary-logo" />
-          </body>
-        </html>
-      `);
-      newWindow.document.close();
-    }
+    // Generate unique ID for this quote
+    const quoteId = generateQuoteId();
+    // Save quote data (chefs and settings) to localStorage
+    const dataToSave = {
+      quoteList,
+      showPrice,
+      showPrivateDiningRoomCapacity
+    };
+    localStorage.setItem("elevate_quote_" + quoteId, JSON.stringify(dataToSave));
+    // Generate shareable link
+    const origin = window.location.origin;
+    const shareUrl = `${origin}/quote/${quoteId}`;
+    // Optionally: open the share page in a new tab
+    window.open(shareUrl, "_blank");
+    // Optionally: open mail client with the link
+    setTimeout(() => {
+      window.location.href =
+        "mailto:?subject=Elevate Chef Quote&body=View the quote here: " + encodeURIComponent(shareUrl);
+    }, 300);
   };
 
   const handleDownloadPDF = () => {
@@ -223,6 +159,88 @@ const App = () => {
       pdfContent.style.display = "none"; // hide even if error
     });
 };
+
+  // If on /quote/:id, render the quote page using localStorage data
+  if (quoteIdFromUrl) {
+    // Try to load from localStorage
+    let stored = null;
+    try {
+      stored = JSON.parse(localStorage.getItem("elevate_quote_" + quoteIdFromUrl));
+    } catch (e) {
+      stored = null;
+    }
+    // If not found, show error
+    if (!stored) {
+      return (
+        <div style={{ padding: 40, textAlign: "center" }}>
+          <img src="/logo.png" alt="Elevate Logo" style={{ width: 200, marginBottom: 32 }} />
+          <h2>Quote Not Found</h2>
+          <p>This quote link is invalid or has expired.</p>
+        </div>
+      );
+    }
+    // Render quote page
+    return (
+      <div style={{ background: "#f5f5f5", minHeight: "100vh", paddingBottom: 40 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 40, padding: "40px 40px 0 40px" }}>
+          <img src="/logo.png" alt="Elevate Logo" style={{ width: 180 }} />
+          <div style={{ fontSize: "0.75rem", color: "#555", marginTop: 10 }}>© 2025 ELEVATE PROPRIETARY & CONFIDENTIAL.</div>
+        </div>
+        <h1 style={{
+          fontFamily: "'Archivo Black', sans-serif",
+          textTransform: "uppercase",
+          fontSize: "2rem",
+          margin: "0 0 2.5rem 0",
+          textAlign: "center"
+        }}>
+          Celebrity Chef Dinner
+        </h1>
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          {stored.quoteList && stored.quoteList.length > 0 ? (
+            stored.quoteList.map((chef, i) => (
+              <div key={i} style={{
+                display: "flex",
+                gap: 20,
+                marginBottom: 30,
+                borderBottom: "2px solid #F26622",
+                paddingBottom: 30,
+                maxWidth: 800,
+                marginLeft: "auto",
+                marginRight: "auto",
+                textAlign: "left",
+                background: "#F5F5F5",
+                borderRadius: 0,
+                boxShadow: "none"
+              }}>
+                <img src={chef.Headshot} alt={chef["Chef Name"]} style={{
+                  width: 100,
+                  height: 100,
+                  objectFit: "cover",
+                  borderRadius: "50%"
+                }} />
+                <div style={{ flexGrow: 1 }}>
+                  <h2 style={{
+                    margin: "0 0 10px 0",
+                    fontFamily: "'Archivo Black', sans-serif",
+                    fontSize: "1.2rem",
+                    textTransform: "uppercase"
+                  }}>{chef["Chef Name"]}</h2>
+                  <p><strong>Location:</strong> {chef.Location}</p>
+                  <p>{chef.Bio}</p>
+                  <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
+                  {stored.showPrivateDiningRoomCapacity && <p><strong>Private Dining Room Capacity:</strong> {chef["Private Dining Room Capacity"] || "N/A"}</p>}
+                  {stored.showPrice && <p><strong>Total Investment:</strong> {chef["Selling Range"] || "N/A"}</p>}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No chefs in this quote.</p>
+          )}
+        </div>
+        <img src="/secondary.png" alt="Secondary Logo" style={{ width: 75, display: "block", margin: "60px auto 0" }} />
+      </div>
+    );
+  }
 
   return (
     <div className="container">
