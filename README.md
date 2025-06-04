@@ -86,4 +86,4 @@ public/
 
 ## 📄 License
 
-MIT License — © 2025 Elevate Experiences
+MIT License — © 2025 Elevate Experiences Leighton Van Ness
