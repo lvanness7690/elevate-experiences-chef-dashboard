@@ -411,3 +411,48 @@ body {
   z-index: 1000;
   background-color: #D8D8D8;
 }
+
+
+.toggle-button {
+  background-color: #D8D8D8;
+  color: #1A1816;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid #6C6C6C;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-button.active {
+  background-color: #FE3807;
+  color: #ffffff;
+}
+
+.toggle-button:hover {
+  background-color: #6C6C6C;
+}
+
+.add-to-quote-button {
+  background-color: #FE3807;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 40px; /* Perfectly center vertically */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-to-quote-button:hover {
+  background-color: #000000;
+}

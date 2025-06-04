@@ -21,6 +21,8 @@ const App = () => {
   const [selectedPriceRange, setSelectedPriceRange] = useState("");
   const [quoteList, setQuoteList] = useState([]);
   const [showQuoteModal, setShowQuoteModal] = useState(false);
+  const [showPrice, setShowPrice] = useState(true);
+  const [showPrivateDiningRoomCapacity, setShowPrivateDiningRoomCapacity] = useState(true);
 
   useEffect(() => {
     fetch(URL)
@@ -178,7 +180,7 @@ const App = () => {
                   <p><strong>Location:</strong> ${chef.Location}</p>
                   <p>${chef.Bio}</p>
                   <p><strong>Restaurants:</strong> ${chef["Restaurant/Venue"] || "N/A"}</p>
-                  <p><strong>Total Investment:</strong> ${chef["Selling Range"] || "N/A"}</p>
+                  ${showPrice ? `<p><strong>Total Investment:</strong> ${chef["Selling Range"] || "N/A"}</p>` : ""}
                 </div>
               </div>
             `).join('')}
@@ -271,7 +273,7 @@ const App = () => {
       </div>
 
       {viewAll && (
-        <div className="filters">
+        <div className="filters" style={{ marginBottom: '60px' }}>
           {/* Gender Filter */}
           <div className="dropdown-group" onMouseEnter={() => setShowGenderDropdown(true)} onMouseLeave={() => setShowGenderDropdown(false)}>
             <button>Gender ▾</button>
@@ -372,28 +374,30 @@ const App = () => {
         </div>
       )}
 
-          <div className="chef-list">
+      <div className="chef-list">
         {(search || viewAll) && displayedChefs.length > 0 ? (
           displayedChefs.map((chef, index) => (
             <div key={index} className="chef-card">
               <img src={chef.Headshot} alt={chef["Chef Name"]} className="headshot" />
               <div className="chef-info">
-                <h2>{chef["Chef Name"]}</h2>
-                <p><strong>Gender:</strong> {chef.Gender}</p>
+                <div
+                  className="chef-header"
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <h2 style={{ margin: 0 }}>{chef["Chef Name"]}</h2>
+                  <button
+                    className="add-to-quote-button"
+                    title="Add to Quote"
+                    onClick={() => handleAddToQuote(chef)}
+                  >
+                    +
+                  </button>
+                </div>
                 <p><strong>Location:</strong> {chef.Location}</p>
                 <p>{chef.Bio}</p>
                 <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
-                <p><strong>Capacity:</strong> {chef["Capacity"] || "N/A"}</p>
-                <p><strong>Private Home:</strong> 
-                  <input type="checkbox" checked={chef["Private Home"] === "TRUE"} readOnly /> Yes{" "}
-                  <input type="checkbox" checked={chef["Private Home"] === "FALSE"} readOnly /> No
-                </p>
-                <p><strong>Private Dining Room:</strong> 
-                  <input type="checkbox" checked={chef["Private Dining Room (Y/N)"] === "TRUE"} readOnly /> Yes{" "}
-                  <input type="checkbox" checked={chef["Private Dining Room (Y/N)"] === "FALSE"} readOnly /> No
-                </p>
+                <p><strong>Private Dining Room Capacity:</strong> {chef["Private Dining Room Capacity"] || "N/A"}</p>
                 <p><strong>Price:</strong> {chef["Selling Range"] || "N/A"}</p>
-                <button className="quote-button" onClick={() => handleAddToQuote(chef)}>Add to Quote</button>
               </div>
             </div>
           ))
@@ -409,7 +413,28 @@ const App = () => {
           <div className="modal-logo-container">
             <img src="/logo.png" alt="Elevate Logo" className="modal-logo" />
           </div>
-
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <button
+              className="toggle-button"
+              onClick={() => setShowPrice(!showPrice)}
+            >
+              {showPrice ? "Hide Price" : "Show Price"}
+            </button>
+            <button
+              className="toggle-button"
+              onClick={() => setShowPrivateDiningRoomCapacity(!showPrivateDiningRoomCapacity)}
+              style={{ marginLeft: '10px' }}
+            >
+              {showPrivateDiningRoomCapacity ? "Hide Capacity" : "Show Capacity"}
+            </button>
+            <button
+              className="toggle-button"
+              onClick={() => setQuoteList([])}
+              style={{ marginLeft: '10px' }}
+            >
+              Clear Quote
+            </button>
+          </div>
           {quoteList.map((chef, i) => (
             <div key={i} className="chef-card">
               <img src={chef.Headshot} alt={chef["Chef Name"]} className="headshot" />
@@ -427,13 +452,12 @@ const App = () => {
                 <p><strong>Location:</strong> {chef.Location}</p>
                 <p>{chef.Bio}</p>
                 <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
-                <p><strong>Price:</strong> {chef["Selling Range"] || "N/A"}</p>
+                {showPrivateDiningRoomCapacity && <p><strong>Private Dining Room Capacity:</strong> {chef["Private Dining Room Capacity"] || "N/A"}</p>}
+                {showPrice && <p><strong>Price:</strong> {chef["Selling Range"] || "N/A"}</p>}
               </div>
             </div>
           ))}
-
           <div className="modal-buttons">
-            <button className="quote-button" onClick={() => setQuoteList([])}>Clear Quote</button>
             <button className="quote-button" onClick={handleEmailQuote}>Email Quote</button>
             <button className="quote-button" onClick={handleDownloadPDF}>Download PDF</button>
           </div>
@@ -548,7 +572,8 @@ const App = () => {
                 <p><strong>Location:</strong> {chef.Location}</p>
                 <p>{chef.Bio}</p>
                 <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
-                <p><strong>Total Investment:</strong> {chef["Selling Range"] || "N/A"}</p>
+                {showPrivateDiningRoomCapacity && <p><strong>Private Dining Room Capacity:</strong> {chef["Private Dining Room Capacity"] || "N/A"}</p>}
+                {showPrice && <p><strong>Total Investment:</strong> {chef["Selling Range"] || "N/A"}</p>}
               </div>
             </div>
           ))}
