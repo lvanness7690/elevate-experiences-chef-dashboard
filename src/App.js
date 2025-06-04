@@ -275,7 +275,11 @@ const App = () => {
       {viewAll && (
         <div className="filters" style={{ marginBottom: '60px' }}>
           {/* Gender Filter */}
-          <div className="dropdown-group" onMouseEnter={() => setShowGenderDropdown(true)} onMouseLeave={() => setShowGenderDropdown(false)}>
+          <div
+            className="dropdown-group"
+            onMouseEnter={() => setShowGenderDropdown(true)}
+            onMouseLeave={() => setShowGenderDropdown(false)}
+          >
             <button>Gender ▾</button>
             {showGenderDropdown && (
               <div className="dropdown-panel">
@@ -294,7 +298,11 @@ const App = () => {
           </div>
 
           {/* City Filter */}
-          <div className="dropdown-group" onMouseEnter={() => setShowCityDropdown(true)} onMouseLeave={() => setShowCityDropdown(false)}>
+          <div
+            className="dropdown-group"
+            onMouseEnter={() => setShowCityDropdown(true)}
+            onMouseLeave={() => setShowCityDropdown(false)}
+          >
             <button>City ▾</button>
             {showCityDropdown && (
               <div className="dropdown-panel">
@@ -313,7 +321,11 @@ const App = () => {
           </div>
 
           {/* Party Size Filter */}
-          <div className="dropdown-group" onMouseEnter={() => setShowPartyDropdown(true)} onMouseLeave={() => setShowPartyDropdown(false)}>
+          <div
+            className="dropdown-group"
+            onMouseEnter={() => setShowPartyDropdown(true)}
+            onMouseLeave={() => setShowPartyDropdown(false)}
+          >
             <button>Party Size ▾</button>
             {showPartyDropdown && (
               <div className="dropdown-panel">
@@ -334,7 +346,11 @@ const App = () => {
           </div>
 
           {/* Price Range Filter */}
-          <div className="dropdown-group" onMouseEnter={() => setShowPriceDropdown(true)} onMouseLeave={() => setShowPriceDropdown(false)}>
+          <div
+            className="dropdown-group"
+            onMouseEnter={() => setShowPriceDropdown(true)}
+            onMouseLeave={() => setShowPriceDropdown(false)}
+          >
             <button>Price Range ▾</button>
             {showPriceDropdown && (
               <div className="dropdown-panel">
