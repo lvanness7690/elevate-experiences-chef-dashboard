@@ -296,7 +296,7 @@ const App = () => {
             <button>City ▾</button>
             {showCityDropdown && (
               <div className="dropdown-panel">
-                {uniqueValues("Location").map((city, i) => (
+                {uniqueValues("Location").sort((a, b) => a.localeCompare(b)).map((city, i) => (
                   <label key={i} className="dropdown-option">
                     <input
                       type="checkbox"
