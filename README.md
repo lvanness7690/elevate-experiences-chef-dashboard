@@ -82,7 +82,7 @@ public/
 
 ## 📸 Preview
 
-![Chef Dashboard Preview](./public/dashboard-preview.png)
+![Chef Dashboard Preview](./src/images/Screenshot.png)
 
 ## 📄 License
 
