@@ -58,7 +58,7 @@ const App = () => {
   };
 
   const filtered = chefs.filter(c =>
-    `${c["Chef Name"]} ${c.Gender} ${c.Location} ${c.Bio}`.toLowerCase().includes(search.toLowerCase())
+    `${c["Chef Name"]} ${c.Gender} ${c.Location} ${c.Bio} ${c["Restaurant/Venue"]}`.toLowerCase().includes(search.toLowerCase())
   );
 
   const displayedChefs = viewAll ? chefs.filter(matchesFilters) : filtered;
