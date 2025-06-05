@@ -106,7 +106,7 @@ const App = () => {
     `${c["Chef Name"]} ${c.Gender} ${c.Location} ${c.Bio} ${c["Restaurant/Venue"]}`.toLowerCase().includes(search.toLowerCase())
   );
 
-  const displayedChefs = viewAll ? chefs.filter(matchesFilters) : filtered;
+  const displayedChefs = viewAll ? filtered.filter(matchesFilters) : filtered;
 
   const handleAddToQuote = chef => {
     if (!quoteList.find(c => c["Chef Name"] === chef["Chef Name"])) {
