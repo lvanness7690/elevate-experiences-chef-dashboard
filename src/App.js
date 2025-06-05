@@ -37,6 +37,18 @@ const App = () => {
   const [showQuoteModal, setShowQuoteModal] = useState(false);
   const [showPrice, setShowPrice] = useState(true);
   const [showPrivateDiningRoomCapacity, setShowPrivateDiningRoomCapacity] = useState(true);
+  const [selectedGroupSize, setSelectedGroupSize] = useState("");
+  // Returns the price for the selected group size
+  const getPriceForGroupSize = (chef) => {
+    if (selectedGroupSize === "25-50") {
+      return chef["Selling Range (25 - 50)"] || "N/A";
+    } else if (selectedGroupSize === "50+") {
+      return chef["Selling Range (50+)"] || "N/A";
+    } else {
+      // Default if none selected or 15-25 selected
+      return chef["Selling Range (15 - 25)"] || "N/A";
+    }
+  };
 
   // If on /quote/:id, load quote data from localStorage and render quote page
   const quoteIdFromUrl = getQuoteIdFromPath();
@@ -113,7 +125,8 @@ const App = () => {
     const dataToSave = {
       quoteList,
       showPrice,
-      showPrivateDiningRoomCapacity
+      showPrivateDiningRoomCapacity,
+      selectedGroupSize
     };
     localStorage.setItem("elevate_quote_" + quoteId, JSON.stringify(dataToSave));
     // Generate shareable link
@@ -229,7 +242,17 @@ const App = () => {
                   <p>{chef.Bio}</p>
                   <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
                   {stored.showPrivateDiningRoomCapacity && <p><strong>Private Dining Room Capacity:</strong> {chef["Private Dining Room Capacity"] || "N/A"}</p>}
-                  {stored.showPrice && <p><strong>Total Investment:</strong> {chef["Selling Range"] || "N/A"}</p>}
+                  {stored.showPrice && (
+                    <p><strong>Total Investment:</strong> {(() => {
+                      if (stored.selectedGroupSize === "25-50") {
+                        return (chef["Selling Range (25 - 50)"] || "N/A") + " (Based on 25-50 Guests)";
+                      } else if (stored.selectedGroupSize === "50+") {
+                        return (chef["Selling Range (50+)"] || "N/A") + " (Based on 50+ Guests)";
+                      } else {
+                        return (chef["Selling Range (15 - 25)"] || "N/A") + " (Based on 15-25 Guests)";
+                      }
+                    })()}</p>
+                  )}
                 </div>
               </div>
             ))
@@ -290,6 +313,42 @@ const App = () => {
         </p>
       </div>
 
+{(viewAll || search) && (
+  <div className="group-size-select">
+    <strong>Select Group Size:</strong>
+    <label>
+      <input
+        type="radio"
+        name="groupSize"
+        value="15-25"
+        checked={selectedGroupSize === "15-25"}
+        onChange={() => setSelectedGroupSize("15-25")}
+      />
+      15-25 Guests
+    </label>
+    <label>
+      <input
+        type="radio"
+        name="groupSize"
+        value="25-50"
+        checked={selectedGroupSize === "25-50"}
+        onChange={() => setSelectedGroupSize("25-50")}
+      />
+      25-50 Guests
+    </label>
+    <label>
+      <input
+        type="radio"
+        name="groupSize"
+        value="50+"
+        checked={selectedGroupSize === "50+"}
+        onChange={() => setSelectedGroupSize("50+")}
+      />
+      50+ Guests
+    </label>
+  </div>
+)}
+
       {viewAll && (
         <div className="filters" style={{ marginBottom: '60px' }}>
           {/* Gender Filter */}
@@ -344,7 +403,7 @@ const App = () => {
             onMouseEnter={() => setShowPartyDropdown(true)}
             onMouseLeave={() => setShowPartyDropdown(false)}
           >
-            <button>Party Size ▾</button>
+            <button>Capacity ▾</button>
             {showPartyDropdown && (
               <div className="dropdown-panel">
                 {["15-25", "25-50", "50+"].map((size, i) => (
@@ -429,9 +488,17 @@ const App = () => {
                 </div>
                 <p><strong>Location:</strong> {chef.Location}</p>
                 <p>{chef.Bio}</p>
+                {chef["Case Study"] && (
+                  <p>
+                    <strong>Case Study:</strong>{" "}
+                    <a href={chef["Case Study"]} target="_blank" rel="noopener noreferrer">
+                      Link
+                    </a>
+                  </p>
+                )}
                 <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
                 <p><strong>Private Dining Room Capacity:</strong> {chef["Private Dining Room Capacity"] || "N/A"}</p>
-                <p><strong>Price:</strong> {chef["Selling Range"] || "N/A"}</p>
+                <p><strong>Price:</strong> {getPriceForGroupSize(chef)} (Based on {selectedGroupSize || "15-25"} Guests)</p>
               </div>
             </div>
           ))
@@ -487,7 +554,17 @@ const App = () => {
                 <p>{chef.Bio}</p>
                 <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
                 {showPrivateDiningRoomCapacity && <p><strong>Private Dining Room Capacity:</strong> {chef["Private Dining Room Capacity"] || "N/A"}</p>}
-                {showPrice && <p><strong>Price:</strong> {chef["Selling Range"] || "N/A"}</p>}
+                {showPrice && (
+                  <p><strong>Total Investment:</strong> {(() => {
+                    if (selectedGroupSize === "25-50") {
+                      return (chef["Selling Range (25 - 50)"] || "N/A") + " (Based on 25-50 Guests)";
+                    } else if (selectedGroupSize === "50+") {
+                      return (chef["Selling Range (50+)"] || "N/A") + " (Based on 50+ Guests)";
+                    } else {
+                      return (chef["Selling Range (15 - 25)"] || "N/A") + " (Based on 15-25 Guests)";
+                    }
+                  })()}</p>
+                )}
               </div>
             </div>
           ))}
@@ -607,7 +684,9 @@ const App = () => {
                 <p>{chef.Bio}</p>
                 <p><strong>Restaurants:</strong> {chef["Restaurant/Venue"] || "N/A"}</p>
                 {showPrivateDiningRoomCapacity && <p><strong>Private Dining Room Capacity:</strong> {chef["Private Dining Room Capacity"] || "N/A"}</p>}
-                {showPrice && <p><strong>Total Investment:</strong> {chef["Selling Range"] || "N/A"}</p>}
+                {showPrice && (
+                  <p><strong>Total Investment:</strong> {getPriceForGroupSize(chef)} (Based on {selectedGroupSize || "15-25"} Guests)</p>
+                )}
               </div>
             </div>
           ))}

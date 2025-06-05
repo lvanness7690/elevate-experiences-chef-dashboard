@@ -28,6 +28,11 @@ body {
   margin-bottom: 30px;
 }
 
+/* Add spacing below group size button section */
+.roup-buttons-section {
+  margin-bottom: 100px; /* Increase the bottom margin for more space */
+}
+
 .search-bar {
   width: 100%;
   max-width: 500px;
@@ -36,6 +41,11 @@ body {
   border: 2px solid #6C6C6C;
   border-radius: 4px;
   margin-bottom: 20px;
+}
+
+/* Ensure spacing between group size buttons and search bar is clean */
+.search-bar {
+  margin-top: 0;
 }
 
 .instructions {
@@ -455,4 +465,21 @@ body {
 
 .add-to-quote-button:hover {
   background-color: #000000;
+}
+
+input[type="radio"] {
+  accent-color: #fe3807; /* Same orange as .add-to-quote-button */
+}
+
+.group-size-select {
+  margin-bottom: 30px;
+}
+
+a {
+  color: #FE3807;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
